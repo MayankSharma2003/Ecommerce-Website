@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <title>Add Product</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Style the body */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #09c67a;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Style the h1 heading */
+        a {
+            text-align: center;
+            color: #0851d1;
+        }
+
+        /* Style the form container */
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style form labels and input fields */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fbe99c;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: row;
+            /* gap: 20px; */
+        }
+
+        /* Style the file input field */
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+        }
+
+        /* Style the submit button */
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Center align the submit button */
+        input[type="submit"] {
+            display: block;
+            margin: 0 auto;
+        }
+
+        img {
+            width: 100%;
+            height: 60%;
+        }
+
+        .product-card {
+            flex: 1 1 calc(33.33% - 20px);
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .button {
+            display: inline-flex;
+            padding: 10px 20px;
+            /* Adjust the padding as needed */
+            background-color: #007bff;
+            /* Button background color */
+            color: #fff;
+            /* Text color */
+            border: none;
+            border-radius: 5px;
+            /* Rounded corners, adjust as needed */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            width: 13%;
+            height: 30%;
+            transition: background-color 0.3s ease;
+            /* Smooth hover effect */
+        }
+    </style>
+</head>
+
+<body>
+    <a class="button" id="requestbutton">Requests Status</a>
+    <a class="button" id="orderbutton">Orders Details</a>
+    <a class="button" id="reportbutton">Report</a>
+
+    <a class="button" href="sellerlogout" style="margin-left: 550px; background-color: red;">LogOut</a><br><br>
+
+    <form action="/sellerproducts" method="POST" enctype="multipart/form-data">
+        <% if(authorityname) { %>
+            <span id="authorityname" style=" font-size: 20px; color: #0056b3;"><b>⚜ Seller Authority Name :
+                    <%= authorityname %>
+                </b>
+            </span>
+            <% } %><br><br>
+                <label for="product_name">Product Name:</label>
+                <input type="text" id="product_name" name="productname" required><br>
+
+                <label for="product_description">Product Description:</label>
+                <textarea id="product_description" name="description" rows="4" cols="50" required></textarea><br>
+
+                <label for="product_price">Product Price:</label>
+                <input type="number" id="product_price" name="price" step="1" required><br>
+
+                <label for="product_quantity">Product Quantity:</label>
+                <input type="number" id="product_quantity" name="quantity" step="1" required><br>
+
+                <label for="product_image">Product Image:</label>
+                <input type="file" id="image" name="pic" accept="image/*" required><br>
+
+                <input type="submit" value="Add Product" id="submit">
+    </form>
+
+    <div class="container" id="container">
+        <div class="product-list" id="product-list"></div>
+    </div>
+</body>
+
+<script>
+    fetch("/allproductsforseller")
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            var products = data;
+            console.log(products);
+            const productlist = document.getElementById("product-list");
+            for (var i = 0; i < products.length; i++) {
+                const product = products[i];
+                const productCard = document.createElement("div");
+                productCard.classList.add("product-card");
+                productCard.setAttribute("id", product.id);
+                productCard.innerHTML = `
+                    <img src="${product.fileName}" />
+                    <input type="text" id="name" value=${product.productname}>
+                    <input type="text" id="des" value=${product.description}>
+                    <input type="text" id="price" value=${product.price}>
+                    <input type="text" i="quantity" value=${product.quantity}>
+                `;
+                const buttons = document.createElement("div");
+                buttons.innerHTML = `<button class="update">Update</button>
+                <button class="delete">Delete</button>`;
+                buttons.classList.add("buttondiv")
+                productlist.appendChild(productCard);
+                productCard.appendChild(buttons);
+            }
+        })
+        .catch(function (error) {
+            throw new error;
+        })
+
+    const container = document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("update")) {
+            const id = e.target.parentNode.parentNode.getAttribute("id");
+            var quantity = e.target.parentNode.previousElementSibling.value;
+            var price = e.target.parentNode.previousElementSibling.previousElementSibling.value;
+            var description = e.target.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.value;
+            var name = e.target.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.value;
+            // console.log(quantity,price,description,name);
+
+            fetch("/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id, quantity: quantity, price: price, description: description, name: name }),
+            })
+                .then((response) => {
+                    if (response.status == 200) {
+                        // console.log("UPDATED");
+                        swal({
+                            title: "Updated Successfuly",
+                            icon: "success",
+                        })
+                    }
+                    else {
+                        console.log("ERROR");
+                    }
+                })
+        }
+        else if (e.target.classList.contains("delete")) {
+            const id = e.target.parentNode.parentNode.getAttribute("id");
+            e.target.parentNode.parentNode.remove();
+            fetch("/deletee?id=" + id)
+                .then((response) => {
+                    if (response.status == 200) {
+                        console.log("DELETED");
+                    }
+                    else {
+                        console.log("ERROR");
+                    }
+                })
+        }
+    })
+
+    const orderbutton = document.getElementById("orderbutton");
+    orderbutton.addEventListener("click", function () {
+        window.location.href = "/sellerorderdetails";
+    })
+
+    const requestbutton = document.getElementById("requestbutton");
+    requestbutton.addEventListener("click", function () {
+        window.location.href = "/sellerrequest";
+    })
+
+    const reportbutton = document.getElementById("reportbutton");
+    reportbutton.addEventListener("click", function () {
+        window.location.href = "/report";
+    });
+</script>
+
+</html>

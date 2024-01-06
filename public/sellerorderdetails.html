@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {    
+            background-color: #7b0000;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            height: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #f5dddd;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .order {
+            border: 1px solid #000000;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .order-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .order-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .order-status {
+            font-weight: bold;
+        }
+
+        .order-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .order-details {
+            background-color: #f5dddd;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        /* Button styles */
+        .cancel-button {
+            background-color: #e74c3c;
+            /* Red background color */
+            color: #fff;
+            /* White text color */
+            padding: 10px 20px;
+            /* Padding for button size */
+            border: none;
+            /* Remove button border */
+            border-radius: 5px;
+            /* Rounded corners */
+            cursor: pointer;
+            /* Change cursor on hover */
+            font-size: 16px;
+            /* Font size */
+            margin-left: 670px;
+        }
+
+        .cancel-button:hover {
+            background-color: #c0392b;
+            /* Darker red on hover */
+        }
+
+        img {
+            width: 150px;
+            height: 160px;
+        }
+
+
+
+
+
+.action-button {
+            display: inline-flex;
+            padding: 10px 20px;
+            /* Adjust the padding as needed */
+            background-color: #007bff;
+            /* Button background color */
+            color: #fff;
+            /* Text color */
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            height: 10%;
+            transition: background-color 0.3s ease;
+            /* Smooth hover effect */
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 style="margin-top: -8px;">Customers Orders</h1>
+    </header>
+    <a href="sellerproducts">Go to back</a>
+    <div class="container" id="order-history">
+        <!-- <div class="order" data-order-id="1">
+            <div class="order-title">Order #12345</div>
+            <div class="order-info">
+                <div>Order Date: Jan 15, 2023</div>
+                <div class="order-status">Status: Shipped</div>
+            </div>
+        </div>
+
+        <div class="order" data-order-id="2">
+            <div class="order-title">Order #67890</div>
+            <div class="order-info">
+                <div>Order Date: Feb 20, 2023</div>
+                <div class="order-status">Status: Delivered</div>
+            </div>
+        </div> -->
+
+        <!-- Add more orders here -->
+    </div>
+
+    <div class="order-popup" id="order-popup">
+        <div class="order-details" id="order-details">
+            <span class="close-button" id="close-button">X</span>
+            <div id="popup-content">
+                <!-- <h2>Order Details</h2>
+                <p>Order Number: #12345</p>
+                <p>Order Date: Jan 15, 2023</p>
+                <p>Status: Shipped</p>
+                <h3>Tracking Information</h3>
+                <p>Carrier: UPS</p>
+                <p>Tracking Number: 1Z9999W99999999999</p> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const orderHistoryContainer = document.getElementById('order-history');
+        const orderPopup = document.getElementById('order-popup');
+        const orderDetails = document.getElementById('order-details');
+        const closeBtn = document.getElementById('close-button');
+        const popupContent = document.getElementById('popup-content');
+
+        const orders = [];
+        let i=0;
+        main();
+        function main(){
+            // if(i++!=0){
+            orderHistoryContainer.innerHTML='';
+            popupContent.innerHTML="";
+            orderPopup.style.display = 'none';
+            // }
+            fetch("/orderedproductsforseller")
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (orders) {
+                    orderHistoryContainer.innerHTML = '';
+                    orders.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.classList.add('order');
+                        orderDiv.setAttribute("id", `${order.orderid}`);
+                        orderDiv.innerHTML = `
+                <div class="order-title">Order Name : ${order.productname}</div>
+                <div class="order-info">
+                    <div>Order Date: ${order.orderdate.split('GMT+0530 (India Standard Time)')}</div>
+                </div>
+            `;
+
+                        orderHistoryContainer.appendChild(orderDiv);
+                        const temp = document.getElementById(`${order.orderid}`);
+                        // const button = document.getElementsByClassName("cancel-button")
+                        if (order.deliverd == 1) {
+                            temp.style.color = 'green';
+                        }
+                        
+                    });
+
+                    function openOrderPopup(order) {
+                        const popupContent = document.getElementById('popup-content');
+                        popupContent.innerHTML = `
+                <h2>Order Details</h2>
+                <img src="${order.fileName}"" />
+                <p>Order id: ${order.orderid}</p>
+                <p>Order Date: ${order.orderdate.split('GMT+0530 (India Standard Time)')}</p>
+                <p>Order Price: ${order.quantity * order.price}</p>
+                <p>Quantity: ${order.quantity}</p>
+                <h3>Tracking Information : </h3>
+                <h4 id="updatemessage" style="color : red"></h4>
+                `;
+                        orderPopup.style.display = 'flex';
+                        call(order);
+                    }
+
+                    function call(order) {
+                        console.log(order);
+                        orderPopup.style.display = 'flex';
+                        const popupContent = document.getElementById('popup-content');
+                        if (order.packed == 0) {
+                            popupContent.querySelector('#updatemessage').textContent = "Product is packed (Update user)."
+                            const button = document.createElement('button');
+                            button.setAttribute("class", "action-button");
+                            button.setAttribute("id", "packed");
+                            button.innerHTML = `Mark as Packed`;
+                            popupContent.append(button);
+                        }
+                        else if (order.shipped == 0) {
+                            popupContent.querySelector('#updatemessage').textContent = "Product is shipped (Update user)."
+                            const button = document.createElement('button');
+                            button.setAttribute("class", "action-button");
+                            button.setAttribute("id", "shipped");
+                            button.innerHTML = `Mark as Shipped`;
+                            popupContent.append(button);
+                        }
+                        else if (order.deliverd == 0) {
+                            popupContent.querySelector('#updatemessage').textContent = "Product is shipped by your side, now distrbutor will deliver the product."
+                            // const button = document.createElement('button');
+                            // button.setAttribute("class", "action-button");
+                            // button.setAttribute("id", "deliverd");
+                            // button.innerHTML = `Mark as Deliverd`;
+                            // popupContent.append(button);
+                        }
+                        else {
+                            const h4=document.createElement('h4');
+                            h4.style.color="green"
+                            h4.innerHTML=`This Order is already marked as delivered.`;
+                            popupContent.append(h4);
+                        }
+
+                        // document.addEventListener("click", function (e) {
+                        //     if (e.target.classList.contains("action-button")) {
+                        //         call1(order);
+                        //     }
+                        // })
+
+                        const buttont = document.querySelectorAll(".action-button")
+                        buttont.forEach(b =>{
+                            b.addEventListener("click",function(){
+                                call1(order);
+                            })
+                        })
+                    }
+
+
+
+                    closeBtn.addEventListener('click', function () {
+                        orderPopup.style.display = 'none';
+                    });
+
+                    const orderElements = document.querySelectorAll('.order');
+                    orderElements.forEach(orderElement => {
+                        orderElement.addEventListener('click', function () {
+                            const orderId = parseInt(orderElement.getAttribute('id'));
+                            const order = orders.find(o => o.orderid === orderId);
+                            if (order) {
+                                openOrderPopup(order);
+                            }
+                        });
+                    });
+
+                    function call1(order) {
+                        console.log(order);
+                        let pButton = document.getElementById('packed')
+                        let sButton = document.getElementById('shipped')
+                        let dButton = document.getElementById('deliverd');
+                        var column;
+                        if (pButton) {
+                            column = pButton.getAttribute("id");
+                        }
+                        else if (sButton) {
+                            column = sButton.getAttribute("id");
+                        }
+                        else if (dButton) {
+                            column = dButton.getAttribute("id");
+                        }
+                        // console.log(column,order.orderid);
+
+                        fetch("/updatetrack", {
+                            method: "POST",
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ orderid: order.orderid, column: column }),
+                        })
+                            .then(function () {
+                                main();
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            })
+                    }
+
+                })
+                .catch(function (error) {
+                    console.log(error);;
+                })
+        }
+
+
+    </script>
+</body>
+
+</html>

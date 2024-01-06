@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Seller Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #b6f4bb;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #698551;
+            box-shadow: 0px 0px 10px 0px #000000;
+            border-radius: 5px;
+            margin-top: 100px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="email"],
+        input[type="text"],
+        input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .login-btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+        #togglePassword {
+            position: absolute;
+            margin-top: 13px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Seller Login</h2>
+        <!-- <form action="" method="post"> -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <!-- <input type="password" id="password" name="password" required> -->
+            <span><input type="password" name="password" placeholder="Password" id="password"><i class="fa fa-eye"
+                    id="togglePassword"></i></span>
+        </div>
+        <button type="submit" class="login-btn" id="login">Login</button>
+        <!-- </form> -->
+        <p>Don't have an account? <a href="/sellersignup">Sign up</a></p>
+        <a href="/ecomproduct" id="goto">Go to home without login..</a><br>
+        <p style="color: red; text-align: center; text-shadow: black;" id="error"></p>
+    </div>
+
+    <script>
+        const login = document.getElementById("login");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+
+        const togglePassword = document.getElementById('togglePassword');
+
+            togglePassword.addEventListener('click', () => {
+                if (password.type === 'password') {
+                    password.type = 'text';
+                    togglePassword.classList.remove('fa-eye');
+                    togglePassword.classList.add('fa-eye-slash');
+                } else {
+                    password.type = 'password';
+                    togglePassword.classList.remove('fa-eye-slash');
+                    togglePassword.classList.add('fa-eye');
+                }
+            });
+
+        login.addEventListener("click", function () {
+            console.log(email.value, password.value);
+            if(email.value=="distributor.com" && password.value==1234){
+                fetch("/distributorlogin");
+                window.location.href = "/distributor";
+            }
+            else{
+                fetch("/sellerlogin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email.value, password: password.value }),
+                })
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            window.location.href = "/sellerproducts";
+                        }
+                        else {
+                            if (response.status == 304) {
+                                document.getElementById("error").textContent = "Verify your Email first...";
+                            }
+                            else
+                                document.getElementById("error").textContent = "Invalid Input";
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            }
+            email.value = "";
+            password.value = "";
+        });
+    </script>
+</body>
+
+</html>

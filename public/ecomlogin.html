@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Website Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('shopping-background.jpg'); /* Replace with your own background image */
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #eee1ddde;        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            border-radius: 5px;
+            text-align: center;
+            width: 300px;
+            
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff5722; /* Shopping-themed color */
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #goto{
+            width: 100%;
+            padding: 10px;
+            background-color: #0e87f8; /* Shopping-themed color */
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #ff4500; /* Darker shade of the theme color */
+        }
+
+        .login-container p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .login-container a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+        #togglePassword {
+            position: absolute;
+            /* top: 10px;
+            right: 50px; */
+            margin-top: 22px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Welcome..</h2>
+        <!-- <form  id="loginForm"> -->
+            <input type="text" name="email" placeholder="Email" id="email">
+            <span><input type="password" name="password" placeholder="Password" id="password" ><i class="fa fa-eye" id="togglePassword"></i></span>
+            
+            <button type="submit" id="login" style="width: 50%;">Login</button><br><br>
+            <a href="ecomforgot">Forgot Password ?</a>
+        <!-- </form> -->
+        <p>Don't have an account? <a href="ecomsignup">Sign up</a></p>
+        <p style="color: red; text-align: center; text-shadow: black;" id="error"></p><br>
+        <a href="/ecomproduct" id="goto">Go to home without login..</a><br>
+    </div>
+    <script>
+        const login = document.getElementById("login");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");  
+        
+        const togglePassword = document.getElementById('togglePassword');
+
+            togglePassword.addEventListener('click', () => {
+                if (password.type === 'password') {
+                    password.type = 'text';
+                    togglePassword.classList.remove('fa-eye');
+                    togglePassword.classList.add('fa-eye-slash');
+                } else {
+                    password.type = 'password';
+                    togglePassword.classList.remove('fa-eye-slash');
+                    togglePassword.classList.add('fa-eye');
+                }
+            });
+
+        login.addEventListener("click",function(){
+            console.log(email.value,password.value);
+            fetch("/ecomlogin",{
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email:email.value,password:password.value}),  
+            })
+        .then(function(response){
+            if(response.status===200){
+                window.location.href="/ecomproduct";
+            }
+            else{
+                    if(response.status===304){
+                        window.location.href="/ecomadmin";
+                    }
+                else
+                    document.getElementById("error").textContent="Invalid Input";
+            }
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+        email.value="";
+        password.value="";
+});
+
+    </script>
+</body>
+</html>

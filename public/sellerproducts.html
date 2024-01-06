@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Product</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Style the body */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #09c67a;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Style the h1 heading */
+        a {
+            text-align: center;
+            color: #0851d1;
+        }
+
+        /* Style the form container */
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style form labels and input fields */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #fbe99c;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: row;
+            /* gap: 20px; */
+        }
+
+        /* Style the file input field */
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+        }
+
+        /* Style the submit button */
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Center align the submit button */
+        input[type="submit"] {
+            display: block;
+            margin: 0 auto;
+        }
+
+        img {
+            width: 100%;
+            height: 60%;
+        }
+
+        .product-card {
+            flex: 1 1 calc(33.33% - 20px);
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            display: inline-flex;
+            padding: 10px 20px;
+            /* Adjust the padding as needed */
+            background-color: #007bff;
+            /* Button background color */
+            color: #fff;
+            /* Text color */
+            border: none;
+            border-radius: 5px;
+            /* Rounded corners, adjust as needed */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            width: 45%;
+            height: 30%;
+            transition: background-color 0.3s ease;
+            /* Smooth hover effect */
+        }
+    </style>
+</head>
+
+<body>
+    <a href="ecomproduct">Go to home</a>
+    <form action="/ecomadmin" method="POST" enctype="multipart/form-data">
+        <label for="product_name">Product Name:</label>
+        <input type="text" id="product_name" name="productname" required><br>
+
+        <label for="product_description">Product Description:</label><br>
+        <textarea id="product_description" name="description" rows="4" cols="50" required></textarea><br><br>
+
+        <label for="product_price">Product Price:</label>
+        <input type="number" id="product_price" name="price" step="0.01" required><br>
+
+        <label for="product_quantity">Product Quantity:</label>
+        <input type="number" id="product_quantity" name="quantity" step="0.01" required><br>
+
+        <label for="product_image">Product Image:</label>
+        <input type="file" id="image" name="pic" accept="image/*" required><br>
+
+        <input type="submit" value="Add Product" id="submit">
+    </form>
+
+    <div class="container" id="container">
+        <div class="product-list" id="product-list"></div>
+    </div>
+</body>
+</html>

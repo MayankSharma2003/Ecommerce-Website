@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; 
+            padding: 0;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        nav {
+            background-color: #2c3e50;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+         section {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+       button.accept-button,
+        button.reject-button {
+            background-color: #27ae60;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+
+        h2{
+            color: rgb(6, 149, 149);
+        }
+
+        button.reject-button {
+            background-color: #e74c3c;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        button.remove-button {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        img{
+            height: 30px;
+            width: 40px;
+        }
+        a{
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <a href="/ecomlogout" id="logout">Logout</a>
+    </header>
+    <nav>
+        <ul>
+            <li><a onclick="displayUsers()">Users</a></li>
+            <li><a  onclick="displaySellers()">Sellers</a></li>
+            <li><a  onclick="displaySellerRequests() ">Seller Request</a></li>
+            <li><a  onclick="displayProductRequests() ">Product Request</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="users">
+            <h2>All related details will be shown here....👇 </h2>
+            <ul id="user-list">
+             
+            </ul>
+        </section>
+    </main>
+    <script>
+        
+        const users = [];
+        const sellers = [];
+        const sellerRequests = [];
+        const productRequests = [];
+
+        function displayUsers() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = "";
+            userList.innerHTML = ''; 
+
+            fetch("/getallusers")
+            .then((result) => {
+                return result.json();  
+            })
+            .then((users) => {
+                users.forEach((user) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<b><span>Username: </span></b><span>${user.username}</span>,  
+                    <b><span>Email: </span></b><span>${user.email}</span>
+                    <button class="accept-button">Details</button>
+                    <button class="remove-button">Remove</button>`;
+
+                    const removeButton = listItem.querySelector('.remove-button');
+                    removeButton.addEventListener('click', () => {
+                        userList.removeChild(listItem);
+                    });
+
+                    userList.appendChild(listItem);
+                });
+            })
+            .catch((err) => {
+                
+            });
+
+            
+        }
+
+        function displaySellers() {
+            const sellerList = document.getElementById('user-list');
+            sellerList.innerHTML = "";
+            sellerList.innerHTML = ''; 
+
+            fetch("/getallsellers")
+                .then((result) => {
+                    return result.json();
+                })
+                .then((sellers) => {
+                    sellers.forEach((seller) => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<b><span>Authorityname: </span></b><span>${seller.authorityname}</span>,  
+                    <b><span>Email: </span></b><span>${seller.email}</span>
+                    <button class="accept-button">Details</button>
+                    <button class="remove-button">Remove</button>`;
+
+                        const removeButton = listItem.querySelector('.remove-button');
+                        removeButton.addEventListener('click', () => {
+                            sellerList.removeChild(listItem);
+                        });
+
+                        sellerList.appendChild(listItem);
+                    });
+                })
+                .catch((err) => {
+
+                });
+        }
+
+        function displaySellerRequests() {
+            
+            const RequestList = document.getElementById('user-list');
+            RequestList.innerHTML = "";
+            RequestList.innerHTML = '';
+            
+            fetch("/getseller")
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(sellerRequests){
+                if(sellerRequests.length==0)
+                    {
+                        const RequestItem = document.createElement('li');
+                        RequestItem.innerHTML = `<p style="color:red;">No Seller Request found</p>`;
+                        RequestList.appendChild(RequestItem);
+                    }
+                sellerRequests.forEach((request) => {
+                    const RequestItem = document.createElement('li');
+                    RequestItem.setAttribute("id",request.id);
+                    RequestItem.innerHTML = `👉 <strong>${request.authorityname}</strong> wants to become a seller with id <strong>${request.userid}</strong>(Verified Seller (✔))
+                    <button class="accept-button">Accept</button>
+                    <button class="reject-button">Reject</button>`;
+
+                    const acceptButton = RequestItem.querySelector('.accept-button');
+                    acceptButton.addEventListener('click', () => {
+                        const id = acceptButton.parentNode.getAttribute("id");
+                        fetch("/selleraccepted", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: id }),
+                        })
+                        .then(function(response){
+                            console.log(response);
+                        })
+                        .catch(function(error){
+                            console.log(error);
+                        })
+                        RequestList.removeChild(RequestItem);
+                    });
+
+                    const rejectButton = RequestItem.querySelector('.reject-button');
+                    rejectButton.addEventListener('click', () => {
+                        const id = acceptButton.parentNode.getAttribute("id");
+                        fetch("/sellerrejected", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id : id }),
+                        })
+                            .then(function (response) {
+                                console.log(response);
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            })
+                        RequestList.removeChild(RequestItem);
+                    });
+
+                    RequestList.appendChild(RequestItem);
+                });
+            })
+            .catch(function(error){
+                throw error;
+            })  
+
+
+        }
+
+        function displayProductRequests(){
+            const RequestList = document.getElementById('user-list');
+            RequestList.innerHTML = "";
+            RequestList.innerHTML = '';
+            // sellerRequests.forEach((request) => {
+            //     const RequestItem = document.createElement('li');
+            //     RequestItem.innerHTML = `<strong>${request.sellerName}:</strong> ${request.Request} 
+            // <button class="accept-button">Accept</button>
+            // <button class="reject-button">Reject</button>`;
+
+            //     const acceptButton = RequestItem.querySelector('.accept-button');
+            //     acceptButton.addEventListener('click', () => {
+            //         RequestList.removeChild(RequestItem);
+            //     });
+
+            //     const rejectButton = RequestItem.querySelector('.reject-button');
+            //     rejectButton.addEventListener('click', () => {
+            //         RequestList.removeChild(RequestItem);
+            //     });
+
+            //     RequestList.appendChild(RequestItem);
+            // });
+            fetch("/getproduct")
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (productRequests) {
+                    // console.log(productRequests);
+                    if (productRequests.length == 0) {
+                        const RequestItem = document.createElement('li');
+                        RequestItem.innerHTML = `<p style="color:red;">No Product Request found</p>`;
+                        RequestList.appendChild(RequestItem);
+                    }
+                    productRequests.forEach((request) => {
+                        fetch("/getauthorityname?sellerid="+request.sellerid,{
+                            method: 'GET',
+                            headers: { "Content-Type": "application/json" },
+                        })
+                        .then(function(response){
+                            return response.json();
+                        })
+                        .then(function(data){
+                            // console.log(data);
+                            const RequestItem = document.createElement('li');
+                            RequestItem.setAttribute("id", request.id);
+                            RequestItem.innerHTML = `👉 <strong>${data[0].authorityname}</strong> wants to add a new product <img src="${request.fileName}"/> with price : ${request.price}
+                        <button class="accept-button">Accept</button>
+                        <button class="reject-button">Reject</button>`;
+
+                            const acceptButton = RequestItem.querySelector('.accept-button');
+                            acceptButton.addEventListener('click', () => {
+                                const id = acceptButton.parentNode.getAttribute("id");
+                                fetch("/productaccepted", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ id: id }),
+                                })
+                                    .then(function (response) {
+                                        console.log(response);
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    })
+                                RequestList.removeChild(RequestItem);
+                            });
+
+                            const rejectButton = RequestItem.querySelector('.reject-button');
+                            rejectButton.addEventListener('click', () => {
+                                const id = acceptButton.parentNode.getAttribute("id");
+                                fetch("/productrejected", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ id: id }),
+                                })
+                                    .then(function (response) {
+                                        console.log(response);
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    })
+                                RequestList.removeChild(RequestItem);
+                            });
+
+                            RequestList.appendChild(RequestItem);
+                        })
+                        
+                    });
+                })
+                .catch(function (error) {
+                    throw error;
+                });
+        }
+    </script>
+</body>
+
+</html>

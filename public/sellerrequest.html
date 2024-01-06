@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Status Page</title>
+    <style>
+        /* Add styling for the two sections */
+        /* Reset default styles */
+        body,
+        h1,
+        h2,
+        ul,
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Page styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #490000;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Section styles */
+        section {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        /* List styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Color-coded status styles */
+        #pending-requests {
+            border-color: #ffc107;
+        }
+
+        #rejected-requests {
+            border-color: #dc3545;
+        }
+        img{
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="/sellerproducts" style="margin-left: -1200px; color: #f0f0f0;">Go to Back</a>
+        <h1>Request Status Page</h1>
+    </header>
+    <main>
+        <h2>Pending Requests : </h2>
+        <section id="pending-requests">
+            
+            <!-- Pending requests will be displayed here -->
+        </section>
+        <h2>Rejected Requests : </h2>
+        <section id="rejected-requests">
+            
+            <!-- Rejected requests will be displayed here -->
+        </section>
+    </main>
+    <script>
+        fetch("productsforrequest")
+            .then((response) => response.json())
+            .then((data) => {   
+                console.log(data);
+                let dataaa=[];
+                let dataa = data.filter(function(d){
+                    if(d.isActive == true && d.isProved == false)
+                        return d.isActive==true && d.isProved==false;
+                    else if(d.isActive==false) 
+                        dataaa.push(d);
+                })
+                const pendingSection = document.getElementById("pending-requests");
+                renderRequests(pendingSection, dataa,1);
+                const rejectedSection = document.getElementById("rejected-requests");
+                renderRequests(rejectedSection, dataaa,0);
+            })
+            .catch((error) => {
+                console.error("Error fetching request data:", error);
+            });
+
+        function renderRequests(section, requests,temp) {
+            if (requests.length === 0) {
+                section.innerHTML = "<p>No requests found.</p>";
+            } else {
+                const ul = document.createElement("ul");
+
+                requests.forEach((request) => {
+                    if(temp==1)
+                    {
+                        const li = document.createElement("li");
+                        li.innerHTML = `👉 Your product <b>${request.productname}</b> : <img src="${request.fileName}"/> is pending.(Not Approved by Admin)`;
+                        ul.appendChild(li);
+                    }
+                    else
+                    {
+                        const li = document.createElement("li");
+                        li.innerHTML = `👉 Your product <b>${request.productname}</b> : <img src="${request.fileName}"/> is rejected.(Rejected by Admin)`;
+                        ul.appendChild(li);
+                    }
+                    
+                });
+
+                section.appendChild(ul);
+            }
+        }
+
+    </script>
+</body>
+
+</html>

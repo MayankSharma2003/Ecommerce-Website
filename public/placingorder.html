@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #9dc7cf;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #525685;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 10px 0;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        input[type="submit"] {
+            background-color: rgb(0, 126, 0);
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4d0f0f;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <header>
+        <h1>Order Page</h1>
+    </header> -->
+    <a href="ecomcart">Go to back</a>
+    <div class="container">
+        <h2>Order Details</h2>
+        <form id="order-form">
+            <label for="dadderess">Delivery Adderess : </label>
+            <input type="text" id="dadderess" required>
+
+            <label for="mobilenumber">Mobile number : </label>
+            <input type="number" id="mobilenumber" required>
+
+            <label for="method">Select Payment method : </label>
+            
+            <select name="method" id="method">
+                <option value="cash">Cash On delivery</option>
+                <option value="debitcard">Debit Card</option>
+                <option value="creditcard">Credit Card</option>
+                <option value="upi">UPI payment</option>
+            </select><br><br> 
+
+            <input type="submit" id="submit" value="Place Order">
+        </form>
+
+        <h2>Order Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Adderess</th>
+                    <th>Mobile Number</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="order-summary">
+                <!-- Order details will be displayed here -->
+            </tbody>
+        </table>
+
+        <h2>Total Amount</h2>
+        <div id="total-amount" style="color: green; font-size: large;">
+            <!-- Total amount will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        const orderForm = document.getElementById('order-form');
+        const submit = document.getElementById('submit');
+        const orderSummary = document.getElementById('order-summary');
+        const totalAmount = document.getElementById('total-amount');
+        const dadderess = document.getElementById("dadderess");
+        const mobilenumber = document.getElementById("mobilenumber");
+        const method = document.getElementById("method");
+
+        submit.addEventListener('click',async function (event) {
+            event.preventDefault();
+
+            await fetch("/orderdetails", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dadderess: dadderess.value, mobilenumber : mobilenumber.value, method : method.value }),
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(data){
+                var sum=0;
+                data.forEach(d=>{
+                        const newRow = document.createElement('tr');
+                        if (d.inStock) {
+                        newRow.innerHTML = `
+                        <td>${d.productname}</td>
+                        <td>${d.dadderess}</td>
+                        <td>${d.mobilenumber}</td>
+                        <td>${d.quantity}</td>
+                        <td>${d.price}</td>
+                        <td>${d.quantity * d.price}</td>`;
+                        sum = sum + (d.quantity * d.price);
+                        }
+                        else{
+                             newRow.innerHTML = `
+                        <td>--</td>
+                        <td>--</td>
+                        <td>--</td>
+                        <td style="color:red">Out of stock</td>
+                        <td>--</td>
+                        <td>--</td>`;
+                        }
+
+                        orderSummary.appendChild(newRow);
+                        
+                 
+                })
+                totalAmount.textContent = `Order Placed with net amount ${sum}`;
+            })
+            .catch(function(error){
+                throw new error;
+            })
+            
+            
+           
+
+            orderForm.reset();
+        });
+    </script>
+</body>
+
+</html>

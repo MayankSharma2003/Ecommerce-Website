@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Website Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('shopping-background.jpg'); /* Replace with your own background image */
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #eee1ddde;
+        }
+
+        .signup-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .signup-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .signup-container input[type="text"],
+        .signup-container input[type="email"],
+        .signup-container input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .signup-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50; /* Shopping-themed color */
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .signup-container button:hover {
+            background-color: #45A049; /* Darker shade of the theme color */
+        }
+
+        .signup-container p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .signup-container a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .signup-container a:hover {
+            text-decoration: underline;
+        }
+        #togglePassword {
+            position: absolute;
+            /* top: 10px;
+            right: 50px; */
+            margin-top: 22px;
+            margin-left: 3px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Create an Account</h2>
+        <!-- <form id="signupForm"> -->
+            <input type="text" name="username" placeholder="Username" id="username">
+            <input type="email" name="email" placeholder="Email" id="email">
+            <!-- <input type="password" name="password" placeholder="Password" id="password"> -->
+            <span><input type="password" name="password" placeholder="Password" id="password"><i class="fa fa-eye"
+                    id="togglePassword"></i></span>
+            <button type="submit" id="signup">Sign Up</button>
+        <!-- </form> -->
+        <p>Already have an account? <a href="ecomlogin">Log in</a></p>
+        <p style="color: red; text-align: center; text-shadow: black;" id="error"></p>
+    </div>
+    <script>
+        const signup = document.getElementById("signup");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password"); 
+        const username = document.getElementById("username");   
+        
+        const togglePassword = document.getElementById('togglePassword');
+
+            togglePassword.addEventListener('click', () => {
+                if (password.type === 'password') {
+                    password.type = 'text';
+                    togglePassword.classList.remove('fa-eye');
+                    togglePassword.classList.add('fa-eye-slash');
+                } else {
+                    password.type = 'password';
+                    togglePassword.classList.remove('fa-eye-slash');
+                    togglePassword.classList.add('fa-eye');
+                }
+            });
+
+        signup.addEventListener("click",function(){
+            fetch("/ecomsignup",{
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username:username.value,email:email.value,password:password.value,id:Date.now()}),  
+            })
+        .then(function(response){
+            if(response.status===200){
+                window.location.href="/ecomlogin";
+            }
+            else{
+                document.getElementById("error").textContent="Invalid Input";
+            }
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+        username.value="";
+        email.value="";
+        password.value="";
+});
+
+    </script>
+</body>
+</html>

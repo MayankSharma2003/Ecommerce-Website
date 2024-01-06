@@ -1,0 +1,300 @@
+<html>
+
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #7da3de;
+        }
+
+        header {
+            background-color: #3f5cdc;
+            color: #fff;
+            padding: 10px 0;
+            /* top: 0;
+            width: 100%;
+            position: fixed; */
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            
+            margin: 20px auto;
+            background-color: #fbe99c;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: row;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info #logout {
+            color: #ff5555;
+            text-decoration: none;
+        }
+
+
+
+        .singleproduct {
+            display: none;
+        }
+
+        .product-card {
+            flex: 1 1 calc(33.33% - 20px);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style the "Load More" button */
+        #load-more {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #load-more:hover {
+            background-color: #000000;
+        }
+
+        img {
+            width: 100%;
+            height: 60%;
+        }
+
+        button {
+            display: inline-flex;
+            padding: 10px 20px;
+            /* Adjust the padding as needed */
+            background-color: #007bff;
+            /* Button background color */
+            color: #fff;
+            /* Text color */
+            border: none;
+            border-radius: 5px;
+            /* Rounded corners, adjust as needed */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            height: 10%;
+            transition: background-color 0.3s ease;
+            /* Smooth hover effect */
+        }
+
+        /* Hover effect */
+        button:hover {
+            background-color: #0056b3;
+            /* Change the background color on hover */
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>My Cart</h1>
+        <div class="user-info">
+            <button href="" id="return" style="margin-left: 10px;">Return to home..</a>
+            <button  id="myorders" style="margin-right: 10px;">My Orders..</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="product-list" id="product-list">
+            <% if(store) { %>
+                <% for (let i=0; i < store.length; i++){%>
+                    <div class="product-card" id=<%=store[i].id %>>
+                        <img src=<%=store[i].fileName %>>
+                        <h2><b>Name: </b>
+                            <%=store[i].productname %>
+                        </h2>
+                        <p><b>Description: </b>
+                            <%= store[i].description%>
+                        </p>
+                        <p><b>Price:</b>
+                            <%= store[i].price %>
+                        </p>
+                        <p style="margin-left:43px">
+                            <%= store[i].quantity %>
+                        </p>
+                        <div class="buttondiv">
+                            <button class="minus">-</button>
+                            <button class="plus">+</button>
+                            <button class="delete">Delete</button>
+                            <button class="buy" style="background-color: green; margin-left: 25px;">Buy Now</button>
+                        </div>
+                        <span style="display: none;" id="uni">Product limit exceed</span>
+                    </div>
+                    <%}%>
+                        <% } %>
+                <% if(!store){ %>
+                        <h1>Cart is empty</h1>
+                    <% } %>
+        </div><br><br>
+
+    <% if(store) { %>
+        <% var total= 0%>
+        <% for (let i=0; i < store.length; i++){%>
+            <% total += store[i].price*store[i].quantity %>
+        <%}%>
+        <div style="text-align: center;">
+            <h2 id="total" style="color:#004288;">Total Price of Cart : <%= total %> Rs.</h2><br>
+            <button id="buycart" style="background-color: rgb(14, 144, 14); height: 40px; ">Buy Whole Cart in one click..</button>
+        </div>
+    <% } %>
+    
+    
+    
+    <script>
+        //   var newproducts;
+        // // loadmore.addEventListener('click',()=>{})
+
+
+        // fetch("/getcartproducts")
+        //     .then((response) => {
+        //         return response.json();
+        //     })
+        //     .then((data) => {
+        //         var products = data;
+        //         const productlist = document.getElementById("product-list");
+        //         for (var i = 0; i < products.length; i++) {
+        //             const product = products[i];
+        //             fetch("/getproducts?id=" + product.productid)
+        //                 .then((response) => { return response.json() })
+        //                 .then((dataa) => {
+        //                     newproducts = dataa
+        //                     const newproduct = newproducts[0];
+
+        //                     const productCard = document.createElement("div");
+        //                     productCard.classList.add("product-card");
+        //                     productCard.setAttribute("id", newproduct.id);
+        //                     productCard.innerHTML = ` 
+        //     <img src="${newproduct.fileName}" />
+        //     <h2><b>Name: </b>${newproduct.productname}</h2>
+        //     <p><b>Description: </b>${newproduct.description}</p>
+        //     <p><b>Price:</b> ${newproduct.price}</p>
+        //     <p style="margin-left:43px">${product.quantity}</p>
+        // `;
+        //                     const buttons = document.createElement("div");
+        //                     buttons.innerHTML = `<button class="minus">-</button>
+        // <button class="plus">+</button>
+        // <button class="delete">Delete</button>`;
+        //                     buttons.classList.add("buttondiv")
+        //                     productlist.appendChild(productCard);
+        //                     productCard.appendChild(buttons);
+
+        //                 })
+        //                 .catch((error) => { console.log(error); })
+
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     })
+
+        const returnn = document.getElementById("return");
+        returnn.addEventListener("click", function () {
+            window.location = "/ecomproduct";
+        })
+
+        const deletee = document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("delete")) {
+                const id = e.target.parentNode.parentNode.getAttribute("id");
+                // console.log(id);
+                e.target.parentNode.parentNode.remove();
+                fetch("/deleteCartProduct?id=" + id)
+                    .then(response => {
+                        console.log(response);
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+        })
+
+        const difference = document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("plus")) {
+
+                const id = e.target.parentNode.parentNode.getAttribute("id");
+                fetch("/increement?id=" + id)
+                    .then(response => {
+                        if (response.status != 200) {
+                            const productcard = document.getElementById(id);
+                            productcard.childNodes[13].style.display = "block";
+                        }
+                        else {
+                            e.target.parentNode.previousElementSibling.innerText = Number(e.target.parentNode.previousElementSibling.innerText) + 1;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+            if (e.target.classList.contains("minus")) {
+                e.target.parentNode.previousElementSibling.innerText = Number(e.target.parentNode.previousElementSibling.innerText) - 1;
+                const id = e.target.parentNode.parentNode.getAttribute("id");
+                const productcard = document.getElementById(id);
+                productcard.childNodes[13].style.display = "none";
+
+                fetch("/decreement?id=" + id)
+                    .then(response => {
+                        if (response.status == 400) {
+                            e.target.parentNode.parentNode.remove();
+                            fetch("/deleteCartProduct?id=" + id)
+                                .then(response => {
+                                    console.log(response);
+                                })
+                                .catch(error => {
+                                    console.log(error)
+                                })
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
+        })
+
+                const myorders = document.getElementById("myorders");
+                    myorders.addEventListener("click", function () {
+                        window.location.href = "myorders";
+                    })
+
+        const buycart = document.getElementById("buycart"); 
+        buycart.addEventListener("click",function(){
+            window.location.href="placingorder";
+        })
+
+
+    </script>
+</body>
+
+</html>

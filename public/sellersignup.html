@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #dbce9f;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #777949;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-top: -10px;
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 90%;
+            padding: 2px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    #togglePassword {
+            position: absolute;
+            margin-top: 9px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Seller Signup</h1>
+        <!-- <form action="#" method="post"> -->
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="authorityName">Authority Name:</label>
+                <input type="text" id="authorityName" name="authorityName" required>
+            </div>
+            <div class="form-group">
+                <label for="district">District:</label>
+                <input type="text" id="district" name="district" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State:</label> 
+                <input type="text" id="state" name="state" required>
+            </div>
+            <div class="form-group">
+                <label for="userid">User ID(Aadhar/PAN/Voter):</label><br>
+                <input type="text" id="userid" name="userid" required>
+            </div>
+            <div class="form-group">
+                <label for="adderess">Address:</label><br>
+                <input type="text" id="adderess" name="adderess" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <span><input type="password" name="password" placeholder="Password" id="password"><i class="fa fa-eye"
+                        id="togglePassword"></i></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn" id="signup">Sign Up</button>
+            </div>
+        <!-- </form>  -->
+        <p>Already have an account? <a href="/sellerlogin">Log in</a></p>
+        <a href="/ecomproduct" id="goto">Go to home without login..</a><br>
+        <p style="color: red; text-align: center; text-shadow: black;" id="error"></p>
+    </div>
+    <script>
+            const signup = document.getElementById("signup");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const state = document.getElementById("state");
+            const district = document.getElementById("district");
+            const userid = document.getElementById("userid");
+            const adderess = document.getElementById("adderess");
+            const authorityname = document.getElementById("authorityName");
+
+            const togglePassword = document.getElementById('togglePassword');
+
+                togglePassword.addEventListener('click', () => {
+                    if (password.type === 'password') {
+                        password.type = 'text';
+                        togglePassword.classList.remove('fa-eye');
+                        togglePassword.classList.add('fa-eye-slash');
+                    } else {
+                        password.type = 'password';
+                        togglePassword.classList.remove('fa-eye-slash');
+                        togglePassword.classList.add('fa-eye');
+                    }
+                });
+
+            signup.addEventListener("click", function () {
+                //console.log(email.value, authorityname.value, password.value, state.value, district.value,  userid.value);
+        
+                fetch("/sellersignup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ authorityname: authorityname.value, email: email.value, password: password.value,state:state.value,district:district.value,userid:userid.value ,id: Date.now() , adderess:adderess}),
+                })
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            window.location.href = "/sellerlogin";
+                        }
+                        else {
+                            document.getElementById("error").textContent = "Invalid Input";
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+                authorityname.value = "";
+                email.value = "";
+                password.value = "";
+                state.value="";
+                district.value="";
+                userid.value="";
+                adderess.value="";
+            });
+    </script>
+</body>
+
+</html>
